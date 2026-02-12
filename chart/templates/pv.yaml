@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-db-pv
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: {{ .Values.db.storageSize }}
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"

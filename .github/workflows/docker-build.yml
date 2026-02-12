@@ -54,4 +54,4 @@ jobs:
         run: |
           helm upgrade --install diploma-project ./chart \
             --set app.image.tag=${{ github.sha }} \
-            --atomic --timeout 5m
+            --timeout 5m --wait
