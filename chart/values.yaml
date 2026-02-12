@@ -20,3 +20,4 @@ db:
   env:
     user: postgres
     password: postgres 
+    name: postgres
