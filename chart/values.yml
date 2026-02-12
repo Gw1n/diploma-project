@@ -1,0 +1,22 @@
+# Настройки приложения (Django)
+app:
+  replicaCount: 1
+  image:
+    repository: Тdoxygwin/diploma-project
+    tag: "latest"
+    pullPolicy: Always
+  service:
+    type: NodePort
+    port: 8000
+    nodePort: 30000 
+  env:
+    debug: "1"
+    allowedHosts: "*"
+
+# Настройки Базы Данных (Postgres)
+db:
+  image: postgres:15-alpine
+  storageSize: 1Gi
+  env:
+    user: postgres
+    password: postgres 

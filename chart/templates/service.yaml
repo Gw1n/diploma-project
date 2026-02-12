@@ -1,0 +1,26 @@
+# Сервис для БАЗЫ (внутренний)
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-db
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: {{ .Release.Name }}-db
+
+---
+# Сервис для ПРИЛОЖЕНИЯ (наружный)
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-web
+spec:
+  type: {{ .Values.app.service.type }}
+  ports:
+    - port: {{ .Values.app.service.port }}
+      targetPort: 8000
+      nodePort: {{ .Values.app.service.nodePort }}
+  selector:
+    app: {{ .Release.Name }}-web

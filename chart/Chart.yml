@@ -1,0 +1,6 @@
+apiVersion: v2
+name: diploma-app
+description: A Helm chart for Django app with PostgreSQL
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

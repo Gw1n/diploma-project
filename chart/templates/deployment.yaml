@@ -1,0 +1,80 @@
+# --- DEPLOYMENT БАЗЫ ДАННЫХ ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-db
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-db
+    spec:
+      containers:
+        - name: postgres
+          image: "{{ .Values.db.image }}"
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: {{ .Values.db.env.user }}
+            - name: POSTGRES_DB
+              value: {{ .Values.db.env.name }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-db-secret
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: db-data
+      volumes:
+        - name: db-data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-db-pvc
+
+---
+# --- DEPLOYMENT ПРИЛОЖЕНИЯ ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-web
+spec:
+  replicas: {{ .Values.app.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-web
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-web
+    spec:
+      containers:
+        - name: django
+          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+          imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DEBUG
+              value: "{{ .Values.app.env.debug }}"
+            - name: DJANGO_ALLOWED_HOSTS
+              value: "{{ .Values.app.env.allowedHosts }}"
+            - name: SQL_ENGINE
+              value: "django.db.backends.postgresql"
+            - name: SQL_DATABASE
+              value: {{ .Values.db.env.name }}
+            - name: SQL_USER
+              value: {{ .Values.db.env.user }}
+            - name: SQL_HOST
+              value: "{{ .Release.Name }}-db"
+            - name: SQL_PORT
+              value: "5432"
+            - name: SQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-db-secret
+                  key: SQL_PASSWORD
