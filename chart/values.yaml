@@ -2,7 +2,7 @@
 app:
   replicaCount: 1
   image:
-    repository: Тdoxygwin/diploma-project
+    repository: doxygwin/diploma-project
     tag: "latest"
     pullPolicy: Always
   service:
