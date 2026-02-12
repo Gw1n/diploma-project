@@ -1,0 +1,6 @@
+.env
+*.tfstate
+*.tfstate.backup
+.terraform/
+hosts.ini
+.terraform.lock.hcl

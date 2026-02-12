@@ -1,0 +1,29 @@
+---
+- name: Download GitLab Runner installation script
+  get_url:
+    url: "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh"
+    dest: "/tmp/gitlab_runner_script.sh"
+    mode: '0755'
+
+- name: Run GitLab Runner installation script
+  shell: "/tmp/gitlab_runner_script.sh"
+  args:
+    creates: "/etc/apt/sources.list.d/runner_gitlab-runner.list"
+
+- name: Install GitLab Runner
+  apt:
+    name: gitlab-runner
+    state: present
+    update_cache: yes
+
+- name: Ensure Docker is running (Runner needs it)
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Add gitlab-runner user to docker group
+  user:
+    name: gitlab-runner
+    groups: docker
+    append: yes
